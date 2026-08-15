@@ -11,6 +11,7 @@ Use this to upgrade any-series Azure VMs to the v6 or v7 (NVMe-only) generations
 ## Table of contents
 
 - [Why this script exists](#why-this-script-exists)
+- [Architecture](#architecture)
 - [Two execution paths](#two-execution-paths)
 - [Requirements](#requirements)
 - [Parameters](#parameters)
@@ -49,6 +50,20 @@ This script covers these use cases:
 4. **SCSI temp disk to NVMe temp disk** — e.g. `E8bds_v5` to `E8ads_v7`, where the NVMe temp disk arrives raw and unformatted after a deallocate or host move.
 
 On Linux, none of these resizes are blocked by Azure. Linux VMs always take PATH A (simple resize) regardless of disk architecture.
+
+---
+
+## Architecture
+
+The two diagrams below give an end-to-end view of how the script operates.
+
+**Page 1 — Discovery & Preparation:** inputs and pre-flight checks (SKU, quota, generation, ADE/ASR blockers), the path selection logic, in-guest OS preparation, optional Windows-only tasks (pagefile migration, NVMe temp-disk startup task), and stopping the VM.
+
+![Discovery & Preparation — inputs, pre-flight checks, path selection logic, OS prep, and VM stop](Architectural-Page01.png)
+
+**Page 2 — Path Execution:** how PATH A (resize) and PATH B (recreate) run, including OS-disk patching, snapshot safety backup, full VM configuration capture, VM shell delete and recreate, extension reinstallation, and RBAC restore.
+
+![Path Execution — PATH A resize and PATH B recreate flows](Architectural-Page02.png)
 
 ---
 
